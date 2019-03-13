@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+  RailsFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: RailsApp
+      Handler: lambda.handler
+      Runtime: ruby2.5
+      CodeUri: "./"
+      MemorySize: 1024
+      Timeout: 500
+      Environment:
+        Variables:
+          SECRET_KEY_BASE: secretsecretsecret
+          RAILS_SERVE_STATIC_FILES: true
+          RAILS_LOG_TO_STDOUT: true
+          RAILS_ENV: production
+          BOOTSNAP_CACHE_DIR: '/tmp/.bootsnap/'
+          RAILS_RELATIVE_URL_ROOT: /Prod
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: '/{proxy+}'
+            Method: ANY
+            RestApiId: !Ref RailsAPI
+  RailsAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: RailsAPI
+      StageName: Prod
+      DefinitionBody:
+        swagger: '2.0'
+        basePath: '/Prod'
+        info:
+          title: !Ref AWS::StackName
+        paths:
+          /articles/new:
+            x-amazon-apigateway-any-method:
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri:
+                  !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RailsFunction.Arn}/invocations'
+                passthroughBehavior: "when_no_match"
+                httpMethod: POST
+                type: "aws_proxy"
+          /articles:
+            x-amazon-apigateway-any-method:
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri:
+                  !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RailsFunction.Arn}/invocations'
+                passthroughBehavior: "when_no_match"
+                httpMethod: POST
+                type: "aws_proxy"
+          /{proxy+}:
+            x-amazon-apigateway-any-method:
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri:
+                  !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RailsFunction.Arn}/invocations'
+                passthroughBehavior: "when_no_match"
+                httpMethod: POST
+                type: "aws_proxy"
+          /hello:
+            get:
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri:
+                  !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RailsFunction.Arn}/invocations'
+                passthroughBehavior: "when_no_match"
+                httpMethod: POST
+                type: "aws_proxy"
+          /:
+            get:
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri:
+                  !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RailsFunction.Arn}/invocations'
+                passthroughBehavior: "when_no_match"
+                httpMethod: POST
+                type: "aws_proxy"
+  ConfigLambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    DependsOn:
+    - RailsFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RailsFunction
+      Principal: apigateway.amazonaws.com
+Outputs:
+  RailsAppUrl:
+    Description: App endpoint URL
+    Value: !Sub "https://${RailsAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod"
