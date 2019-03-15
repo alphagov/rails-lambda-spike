@@ -35,7 +35,7 @@ def handler(event:, context:)
   # Environment required by Rack (http://www.rubydoc.info/github/rack/rack/file/SPEC)
   env = {
     'REQUEST_METHOD' => event['httpMethod'],
-    'SCRIPT_NAME' => '',
+    'SCRIPT_NAME' => (event.dig('requestContext', 'path') || '').chomp(event['path'] || ''),
     'PATH_INFO' => event['path'] || '',
     'QUERY_STRING' => querystring || '',
     'SERVER_NAME' => 'localhost',
@@ -53,9 +53,6 @@ def handler(event:, context:)
       env["HTTP_#{key}"] = value
     }
   end
-
-  puts event
-  puts env
 
   begin
     # Response from Rack must have status, headers and body
