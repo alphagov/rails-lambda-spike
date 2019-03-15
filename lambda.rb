@@ -85,3 +85,9 @@ def handler(event:, context:)
   # By default, the response serializer will call #to_json for us
   response
 end
+
+def migration_handler(event:, context:)
+  Rails.application.load_tasks
+  Rake::Task['db:create'].invoke
+  Rake::Task['db:migrate'].invoke
+end

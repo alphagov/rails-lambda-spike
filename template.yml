@@ -16,6 +16,26 @@ Parameters:
     Default: /rails-lambda/SECRET_KEY_BASE
 
 Resources:
+  RailsMigrationFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: RailsMigrationFunction
+      Handler: lambda.migration_handler
+      Runtime: ruby2.5
+      CodeUri: "./"
+      MemorySize: 1024
+      Timeout: 500
+      Environment:
+        Variables:
+          RAILS_LOG_TO_STDOUT: true
+          RAILS_ENV: production
+          BOOTSNAP_CACHE_DIR: '/tmp/.bootsnap/'
+          DB_HOST: !Ref EnvDBHost
+          DB_NAME: rails-lambda-pg
+          DB_USER: !Ref  EnvDBUser
+          DB_PASSWORD: !Ref EnvDBPassword
+          SECRET_KEY_BASE: !Ref EnvRailsSecret
+          SCHEMA: /tmp/schema.rb
   RailsFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
