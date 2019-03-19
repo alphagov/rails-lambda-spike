@@ -69,7 +69,7 @@ def handler(event:, context:)
     response = {
       'statusCode' => status,
       'headers' => headers,
-      'body' => body_content
+      'body' => body_content.force_encoding(Encoding::UTF_8)
     }
     if event['requestContext'].key?('elb')
       # Required if we use Application Load Balancer instead of API Gateway
