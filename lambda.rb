@@ -39,11 +39,11 @@ def handler(event:, context:)
     'PATH_INFO' => event['path'] || '',
     'QUERY_STRING' => querystring || '',
     'SERVER_NAME' => 'localhost',
-    'SERVER_PORT' => 80,
+    'SERVER_PORT' => event.dig('headers', 'X-Forwarded-Port') || event.dig('headers', 'x-forwarded-port') || 443,
     'CONTENT_TYPE' => event.dig('headers', 'content-type'),
 
     'rack.version' => Rack::VERSION,
-    'rack.url_scheme' => event.dig('headers', 'x-forwarded-proto') || 'http',
+    'rack.url_scheme' => event.dig('headers', 'X-Forwarded-Proto') || event.dig('headers', 'x-forwarded-proto') || 'https',
     'rack.input' => StringIO.new(body || ''),
     'rack.errors' => $stderr,
   }
