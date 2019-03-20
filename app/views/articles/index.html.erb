@@ -1,18 +1,21 @@
-<h1>Listing articles</h1>
+<%= content_tag(:h1,'Listing articles', class: 'govuk-heading-xl') %>
 
-<%= link_to 'New article', new_article_path %>
-<table>
-  <tr>
-    <th>Title</th>
-    <th>Text</th>
-    <th></th>
+<%= link_to 'New article', new_article_path, class: 'govuk-button' %>
+<table class="govuk-table" >
+  <thead class="govuk-table__head">
+  <tr class="govuk-table__row">
+    <th class="govuk-table__header">Title</th>
+    <th class="govuk-table__header">Text</th>
+    <th class="govuk-table__header"></th>
   </tr>
-
+  </thead>
+  <tbody class="govuk-table__body">
   <% @articles.each do |article| %>
-    <tr>
-      <td><%= article.title %></td>
-      <td><%= article.text %></td>
-      <td><%= link_to 'Show', article_path(article) %></td>
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell"><%= article.title %></td>
+      <td class="govuk-table__cell"><%= article.text %></td>
+      <td class="govuk-table__cell"><%= link_to 'Show', article_path(article), class: 'govuk-link' %></td>
     </tr>
   <% end %>
+  </tbody>
 </table>

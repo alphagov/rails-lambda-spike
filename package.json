@@ -1,5 +1,12 @@
 {
   "name": "rails-lambda",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "@rails/webpacker": "3.5",
+    "govuk-frontend": "^2.9.0",
+    "copy-webpack-plugin": "^4.6.0"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "2.11.2"
+  }
 }
